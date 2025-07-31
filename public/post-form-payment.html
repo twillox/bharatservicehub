@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSHub - Complete Payment</title>
+    <link rel="stylesheet" href="css/style.css">  
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    </body>
+</html>
+    <header class="header">
+        <div class="container">
+            <img src="img/bshub-logo-light.svg" alt="BSHub Logo" class="logo">
+        </div>
+    </header>
+
+    <main class="payment-instruction-section">
+        <div class="container">
+            <h1 class="payment-instruction-headline">
+                <span class="animated-fade-in-up">Your Details Are Submitted!</span>
+                <span class="animated-fade-in-up delay-1">Now, Please Complete Your Payment.</span>
+            </h1>
+            <p class="payment-instruction-subtext animated-fade-in delay-2">
+                Thank you for providing your information. The final step to activate your service provider account is to make the one-time verification payment of ₹49.
+            </p>
+            <button id="proceedToPaymentBtn" class="cta-button animated-pop-in delay-3">Proceed to Payment</button>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; BSHub 2025</p>
+            <div class="footer-links">
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
+
+            proceedToPaymentBtn.addEventListener('click', function() {
+                // Razorpay Integration
+                const razorpayKeyId = 'rzp_live_O5cLSrbymHw5Dj'; // Your LIVE Razorpay Key ID
+
+                const options = {
+                    key: razorpayKeyId,
+                    amount: 4900, // Amount in paise (₹49 = 4900 paise)
+                    currency: 'INR',
+                    name: 'BSHub',
+                    description: 'Service Provider Account Verification',
+                    image: 'img/bshub-logo-dark.svg', // Your BSHub logo for the payment popup
+                    handler: function (response) {
+                        // This function is called after successful payment
+                        console.log('Razorpay Payment Success:', response);
+                        // Redirect to the success dashboard page after payment
+                        window.location.href = 'success.html';
+                    },
+                    prefill: {
+                        // You can't prefill form data here as it's not directly accessible from the Google Form redirect.
+                        // If you want to prefill, you'd need to pass data via URL parameters (more complex).
+                        name: '', // Leave empty or ask user for name again
+                        contact: '', // Leave empty or ask user for phone again
+                        email: '' // Leave empty
+                    },
+                    notes: {
+                        // These notes won't contain full form data easily without backend or URL params
+                        "note_key": "Service Provider Verification Fee"
+                    },
+                    theme: {
+                        color: '#101010' // Black theme for Razorpay checkout
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            console.log('Payment window closed by user.');
+                            alert('Payment was not completed. Please try again.');
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', function (response){
+                    alert('Payment failed: ' + response.error.code + ' - ' + response.error.description);
+                    console.error('Razorpay Payment Failed:', response.error);
+                });
+                rzp.open();
+            });
+        });
+    </script>
+</body>
+</html>
